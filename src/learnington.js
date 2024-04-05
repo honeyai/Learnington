@@ -1,12 +1,22 @@
+const dotenv = require("dotenv");
 const fs = require("fs").promises;
 const path = require("path");
 
-const discord = require("discord.js");
-const client = new discord.Client();
-const token = require("../../envDoesntWork.json").BOT_TOKEN;
-const PREFIX = require("../../envDoesntWork.json").PREFIX;
+dotenv.config();
 
-client.login(token);
+const key = process.env.TOKEN;
+const prefix = process.env.PREFIX;
+
+const {Client, Events, GatewayIntentBits} = require("discord.js");
+const intents = GatewayIntentBits;
+const client = new Client({intents: [intents.Guilds]});
+
+
+client.once(Events.ClientReady, readyClient => {
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
+
+client.login(key);
 client.commands = new Map();
 client.on("ready", () => {
   console.log("Time to learnington. Remember, you're worth the time it takes to learn something new!");
@@ -14,7 +24,7 @@ client.on("ready", () => {
 
 client.on("message", (message) => {
   if (message.author.bot) return;
-  if(!message.content.startsWith(PREFIX)) return;
+  if(!message.content.startsWith(prefix)) return;
 
   let [command, ...args] = message.content
       .toLowerCase()
